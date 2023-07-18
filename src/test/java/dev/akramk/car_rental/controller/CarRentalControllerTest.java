@@ -37,7 +37,7 @@ class CarRentalControllerTest {
         car.setDescription("small car");
         car.setYear(2012);
 
-        when(carService.create(car)).thenReturn(car);
+        when(carService.createCar(car)).thenReturn(car);
 
         this.mockMvc.perform(post("/api/v1/cars")
                 .contentType(MediaType.APPLICATION_JSON)
