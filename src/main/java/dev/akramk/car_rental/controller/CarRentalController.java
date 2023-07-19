@@ -56,19 +56,17 @@ public class CarRentalController {
     @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deleteCar(@PathVariable String id) {
         try {
-            // Convert the string ID to an ObjectId
             ObjectId carId = new ObjectId(id);
 
-            // Call the CarService to delete the car by its ObjectId
             boolean deleted = carService.deleteCarById(carId);
 
             if (deleted) {
-                return ResponseEntity.noContent().build(); // Car deleted successfully (HTTP 204)
+                return ResponseEntity.noContent().build();
             } else {
-                return ResponseEntity.notFound().build(); // Car with the given ID not found (HTTP 404)
+                return ResponseEntity.notFound().build();
             }
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build(); // Invalid ID format (HTTP 400)
+            return ResponseEntity.badRequest().build();
         }
     }
 }
