@@ -8,7 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -24,9 +27,9 @@ public class CarRentalController {
         return ResponseEntity.ok(cars);
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<Optional<Car>> getCarByName(@PathVariable String name) {
-        return new ResponseEntity<>(carService.getCar(name), HttpStatus.OK);
+        return new ResponseEntity<>(carService.getCarByName(name), HttpStatus.OK);
     }
 
     @PostMapping
@@ -35,10 +38,10 @@ public class CarRentalController {
         return new ResponseEntity<>(createdCar, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<Car> getCarById(@PathVariable ObjectId id) {
         Optional<Car> carOptional = carService.getCarById(id);
-        return carOptional.map(car -> ResponseEntity.ok(car)).orElseGet(() -> ResponseEntity.notFound().build());
+        return carOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
@@ -50,12 +53,22 @@ public class CarRentalController {
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCar(@PathVariable ObjectId id) {
-        boolean deleted = carService.deleteCar(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
+    @DeleteMapping("/id/{id}")
+    public ResponseEntity<Void> deleteCar(@PathVariable String id) {
+        try {
+            // Convert the string ID to an ObjectId
+            ObjectId carId = new ObjectId(id);
+
+            // Call the CarService to delete the car by its ObjectId
+            boolean deleted = carService.deleteCarById(carId);
+
+            if (deleted) {
+                return ResponseEntity.noContent().build(); // Car deleted successfully (HTTP 204)
+            } else {
+                return ResponseEntity.notFound().build(); // Car with the given ID not found (HTTP 404)
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build(); // Invalid ID format (HTTP 400)
         }
-        return ResponseEntity.notFound().build();
     }
 }

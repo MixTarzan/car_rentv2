@@ -16,7 +16,7 @@ import java.util.List;
 public class Car {
 
     @Id
-    private Object id;
+    private String id;
     private String name;
     private int price;
     private String color;

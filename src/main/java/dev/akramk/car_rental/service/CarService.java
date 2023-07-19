@@ -1,10 +1,14 @@
 package dev.akramk.car_rental.service;
 
+import com.mongodb.client.result.DeleteResult;
 import dev.akramk.car_rental.model.Car;
 import dev.akramk.car_rental.repo.CarRepository;
 import lombok.AllArgsConstructor;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +17,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class CarService {
+    private final MongoTemplate mongoTemplate;
 
     private final CarRepository carRepository;
 
@@ -20,7 +25,7 @@ public class CarService {
         return carRepository.findAll();
     }
 
-    public Optional<Car> getCar(String partialName) {
+    public Optional<Car> getCarByName(String partialName) {
         return carRepository.findCarByName(partialName);
     }
 
@@ -49,12 +54,11 @@ public class CarService {
         return null;
     }
 
-    public boolean deleteCar(ObjectId id) {
-        Optional<Car> carOptional = carRepository.findById(id);
-        if (carOptional.isPresent()) {
-            carRepository.delete(carOptional.get());
-            return true;
-        }
-        return false;
+    public boolean deleteCarById(ObjectId carId) {
+
+        Query query = new Query(Criteria.where("_id").is(carId));
+        DeleteResult result = mongoTemplate.remove(query, Car.class);
+
+        return result.wasAcknowledged() && result.getDeletedCount() > 0;
     }
 }
