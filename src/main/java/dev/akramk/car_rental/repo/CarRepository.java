@@ -16,4 +16,5 @@ public interface CarRepository extends MongoRepository<Car, ObjectId> {
 
     boolean deleteCarById(ObjectId carId);
 
+    void findCarById(String id);
 }
