@@ -14,7 +14,4 @@ public interface CarRepository extends MongoRepository<Car, ObjectId> {
     @Query("{name:'?0'}")
     Optional<Car> findCarByName(String name);
 
-    boolean deleteCarById(ObjectId carId);
-
-    void findCarById(String id);
 }
