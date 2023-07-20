@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,5 +61,18 @@ public class CarService {
         DeleteResult result = mongoTemplate.remove(query, Car.class);
 
         return result.wasAcknowledged() && result.getDeletedCount() > 0;
+    }
+
+    public List<Car> getCarsByNameContains(String name) {
+        List<Car> allCars = carRepository.findAll();
+
+        List<Car> matchingCars = new ArrayList<>();
+        for (Car car : allCars) {
+            if (car.getName().contains(name)) {
+                matchingCars.add(car);
+            }
+        }
+
+        return matchingCars;
     }
 }

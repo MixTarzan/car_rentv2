@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -85,25 +86,29 @@ class CarRentalControllerTest {
     }
 
     @Test
-    void getCarByName_ExactMatch() throws Exception {
+    void getCarsByNameContains_PartialMatch() throws Exception {
         Car car = new Car();
-        car.setName("Opel");
+        car.setName("Opel Astra");
         car.setColor("blue");
         car.setPrice(100);
         car.setDescription("small car");
         car.setYear(2012);
 
-        Mockito.when(carService.getCarByName("Opel")).thenReturn(Optional.of(car));
+        List<Car> carList = new ArrayList<>();
+        carList.add(car);
+
+        Mockito.when(carService.getCarsByNameContains("Opel")).thenReturn(carList);
 
         this.mockMvc.perform(get("/api/v1/cars/name/Opel"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("Opel"))
-                .andExpect(jsonPath("$.color").value("blue"))
-                .andExpect(jsonPath("$.price").value(100))
-                .andExpect(jsonPath("$.description").value("small car"))
-                .andExpect(jsonPath("$.year").value(2012));
+                .andExpect(jsonPath("$[0].name").value("Opel Astra"))
+                .andExpect(jsonPath("$[0].color").value("blue"))
+                .andExpect(jsonPath("$[0].price").value(100))
+                .andExpect(jsonPath("$[0].description").value("small car"))
+                .andExpect(jsonPath("$[0].year").value(2012));
     }
+
 
     @Test
     void updateCar() throws Exception {

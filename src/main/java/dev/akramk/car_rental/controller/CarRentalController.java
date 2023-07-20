@@ -25,8 +25,14 @@ public class CarRentalController {
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<Optional<Car>> getCarByName(@PathVariable String name) {
-        return new ResponseEntity<>(carService.getCarByName(name), HttpStatus.OK);
+    public ResponseEntity<List<Car>> getCarsByName(@PathVariable String name) {
+        List<Car> matchingCars = carService.getCarsByNameContains(name);
+
+        if (matchingCars.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(matchingCars, HttpStatus.OK);
     }
 
     @PostMapping
